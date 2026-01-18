@@ -1,41 +1,43 @@
 package com.example.productapi.service;
 
 import com.example.productapi.model.Product;
+import com.example.productapi.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductService {
-    private final List<Product> products = new ArrayList<>();
-    private Long idCounter = 1L;
 
+    private final ProductRepository productRepository;
 
-    public Product createProduct(Product product){
-        product.setId(idCounter++);
-        products.add(product);
-        return product;
+    // Constructor injection
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
-    public List<Product> getAllProducts(){
-        return products;
+
+    public Product createProduct(Product product) {
+        return productRepository.save(product);  // Saves to database!
     }
-    public Optional<Product> getProductById(Long id){
-        return products.stream().filter(p -> p.getId().equals(id)).findFirst();
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();  // Gets from database!
     }
-    public Product updateProduct(Long id, Product updatedProduct){
-        Product existing = getProductById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+
+    public Optional<Product> getProductById(Long id) {
+        return productRepository.findById(id);  // Queries database!
+    }
+
+    public Product updateProduct(Long id, Product updatedProduct) {
+        Product existing = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
         existing.setName(updatedProduct.getName());
         existing.setPrice(updatedProduct.getPrice());
-        return existing;
-    }
-    public void deleteProduct(Long id){
-        products.removeIf(p -> p.getId().equals(id));
+        return productRepository.save(existing);  // Updates database!
     }
 
-
-
-
-
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);  // Deletes from database!
+    }
 }
