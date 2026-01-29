@@ -34,6 +34,10 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         existing.setName(updatedProduct.getName());
         existing.setPrice(updatedProduct.getPrice());
+        existing.setDescription(updatedProduct.getDescription());
+        existing.setCategory(updatedProduct.getCategory());
+        existing.setStockQuantity(updatedProduct.getStockQuantity());
+
         return productRepository.save(existing);  // Updates database!
     }
 
